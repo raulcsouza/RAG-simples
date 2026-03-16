@@ -1,6 +1,5 @@
 # RAG-simples
 
-readme = """
 ## RAG com Ollama + ChromaDB para PDFs
 
 Este notebook implementa um pipeline de Retrieval-Augmented Generation (RAG) para documentos PDF utilizando:
