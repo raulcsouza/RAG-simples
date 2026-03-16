@@ -1,5 +1,3 @@
-# RAG-simples
-
 ## RAG com Ollama + ChromaDB para PDFs
 
 Este notebook implementa um pipeline de Retrieval-Augmented Generation (RAG) para documentos PDF utilizando:
@@ -187,23 +185,3 @@ arquivo contendo auditoria dos chunks gerados.
 - Monitorar consumo de memória ao aumentar BATCH
 - Manter .env fora de repositórios públicos
 
-Adicionar ao .gitignore:
-
-.env
-chromadb_index/
-
----
-
-## Possíveis extensões
-
-- RAG completo com geração de respostas
-- Busca híbrida (BM25 + embeddings)
-- Re-ranking
-- GraphRAG
-- Avaliação automática de RAG
-"""
-
-with open("README.md", "w", encoding="utf-8") as f:
-    f.write(readme)
-
-print("README.md gerado com sucesso.")
