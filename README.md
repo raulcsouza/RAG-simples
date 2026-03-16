@@ -10,42 +10,6 @@ Este notebook implementa um pipeline de Retrieval-Augmented Generation (RAG) par
 
 O objetivo é converter documentos PDF em chunks vetorizados, armazená-los no ChromaDB e permitir busca semântica eficiente.
 
----
-
-## Arquitetura do Pipeline
-
-PDFs
-↓
-Extração de texto (pypdf)
-↓
-Chunking
-↓
-Embeddings (Ollama)
-↓
-ChromaDB (vector store persistente)
-↓
-Busca semântica
-
----
-
-## Estrutura do Projeto (Exemplo)
-
-project/
-│
-├── data/
-│   └── pdfs/
-│
-├── chromadb_index/
-│
-├── notebooks/
-│   └── rag_pipeline.ipynb
-│
-├── .env
-├── README.md
-└── requirements.txt
-
----
-
 ## Requisitos
 
 Python 3.10+
