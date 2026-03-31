@@ -1,9 +1,11 @@
-## RAG com Ollama + ChromaDB para PDFs
+## RAG com Ollama ou Hugging Face + ChromaDB para PDFs
 
 Este notebook implementa um pipeline de Retrieval-Augmented Generation (RAG) para documentos PDF utilizando:
 
-- Ollama para geração de embeddings
-- Modelo `nomic-embed-text`
+- Ollama para geração de embeddings e texto
+- Hugging Face para geração de embeddings e texto
+- Modelo de Embedding `nomic-embed-text`
+- Modelo para Geração de texto pode ser qualquer um no Ollama ou Hugging Face
 - ChromaDB como banco vetorial
 - Chunking de texto
 - Indexação persistente
@@ -72,11 +74,19 @@ MIN_CHUNK_LEN=200
 OLLAMA_BASE_URL=http://localhost:11434
 EMBED_MODEL=nomic-embed-text
 
+## Geração com Hugging Face
+HF_MODEL_ID = "Qwen/Qwen2.5-3B-Instruct"
+ou
+HF_MODEL_ID = "microsoft/phi-3-mini-4k-instruct"
+
 ## Recuperação
 TOP_K=5
 
 ## Processamento
 BATCH=64
+
+# Numero experimento
+NUMERO_EXPERIMENTO = 1
 
 ---
 
