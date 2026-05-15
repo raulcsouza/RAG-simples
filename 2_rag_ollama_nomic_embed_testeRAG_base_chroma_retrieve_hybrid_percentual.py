@@ -133,15 +133,25 @@ BASE_EXPERIMENTOS = ("b_extrato","a_objeto")
 # Chunking
 # --------------------------------------
 CHUNK_SIZES = (128,256,512,1024,2048,4096)
-CHUNK_OVERLAPS = (0,128)
+CHUNK_OVERLAP_PERCENTAGES = (0,30,60)
 
 MIN_CHUNK_LEN = int(os.getenv("MIN_CHUNK_LEN", 200))
 
 LOGS_ROOT_DIR = Path(f"{PROJECT_ROOT}/logs_experimento_{NUMERO_EXPERIMENTO}").expanduser()
-LOGS_DIR = LOGS_ROOT_DIR / "log_test"
+LOGS_DIR = LOGS_ROOT_DIR
 LOGS_DIR.mkdir(parents=True, exist_ok=True)
 
 _word_re = re.compile(r"[A-Za-zÀ-ÖØ-öø-ÿ0-9_]+")
+
+
+def calculate_chunk_overlap(chunk_size: int, chunk_overlap_percentage: int) -> int:
+    if not 0 <= chunk_overlap_percentage < 100:
+        raise ValueError(
+            f"chunk_overlap_percentage deve estar entre 0 e 99. Recebido: {chunk_overlap_percentage}"
+        )
+
+    chunk_overlap = round(chunk_size * (chunk_overlap_percentage / 100))
+    return min(chunk_overlap, chunk_size - 1)
 
 def ollama_embed(text: str, model: str = EMBED_MODEL) -> list[float]:
     """Gera embedding via Ollama /api/embeddings."""
@@ -734,13 +744,17 @@ def prf(tp, fp, fn):
     return precision, recall, f1
 
 for CHUNK_SIZE in CHUNK_SIZES:
-    for CHUNK_OVERLAP in CHUNK_OVERLAPS:
+    for CHUNK_OVERLAP_PERCENTAGE in CHUNK_OVERLAP_PERCENTAGES:
         for TOP_K in TOP_KS:
             for RETRIEVAL_MODE in RETRIEVAL_MODES:
                 for BASE_EXPERIMENTO in BASE_EXPERIMENTOS:
+                    CHUNK_OVERLAP = calculate_chunk_overlap(
+                        CHUNK_SIZE,
+                        CHUNK_OVERLAP_PERCENTAGE,
+                    )
 
                     LOG_PATH = LOGS_DIR / (
-                        f"log_{CHUNK_SIZE}_overlap_{CHUNK_OVERLAP}_k_{TOP_K}_mode_{RETRIEVAL_MODE}"
+                        f"log_{CHUNK_SIZE}_overlap_pct_{CHUNK_OVERLAP_PERCENTAGE}_k_{TOP_K}_mode_{RETRIEVAL_MODE}"
                         f"_exp_{BASE_EXPERIMENTO}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
                     )
                     _LOG_FILE = open(LOG_PATH, "a", encoding="utf-8")
@@ -753,11 +767,13 @@ for CHUNK_SIZE in CHUNK_SIZES:
                     # --------------------------------------
                     # Paths derivados
                     # --------------------------------------
-                    CHROMADB_PATH = f"chromadb_chunk_size_{CHUNK_SIZE}_overlap_{CHUNK_OVERLAP}"
+                    CHROMADB_PATH = (
+                        f"chromadb_chunk_size_{CHUNK_SIZE}_overlap_pct_{CHUNK_OVERLAP_PERCENTAGE}"
+                    )
                     INDEX_PATH = (PROJECT_ROOT / CHROMADB_PATH).expanduser()
 
                     AUDIT_PATH = (
-                        PROJECT_ROOT / f"chunks_audit_{CHUNK_SIZE}_overlap_{CHUNK_OVERLAP}.json"
+                        PROJECT_ROOT / f"chunks_audit_{CHUNK_SIZE}_overlap_pct_{CHUNK_OVERLAP_PERCENTAGE}.json"
                     ).expanduser()
 
                     max_pergunta_env = os.getenv("MAX_PERGUNTA", "").strip()
@@ -767,7 +783,10 @@ for CHUNK_SIZE in CHUNK_SIZES:
                     OUT_JSONL = (
                         PROJECT_ROOT
                         / f"experimento_{NUMERO_EXPERIMENTO}"
-                        / f"rag_prompt_tests_{CHUNK_SIZE}_overlap_{CHUNK_OVERLAP}_{BASE_EXPERIMENTO}_{RETRIEVAL_MODE}.jsonl"
+                        / (
+                            f"rag_prompt_tests_{CHUNK_SIZE}_overlap_pct_{CHUNK_OVERLAP_PERCENTAGE}_"
+                            f"{BASE_EXPERIMENTO}_{RETRIEVAL_MODE}.jsonl"
+                        )
                     ).expanduser()
 
                     # --------------------------------------
@@ -785,6 +804,7 @@ for CHUNK_SIZE in CHUNK_SIZES:
                     print("DATA_DIR           :", DATA_DIR)
                     print("COLLECTION_NAME    :", COLLECTION_NAME)
                     print("CHUNK_SIZE         :", CHUNK_SIZE)
+                    print("CHUNK_OVERLAP_%    :", CHUNK_OVERLAP_PERCENTAGE)
                     print("CHUNK_OVERLAP      :", CHUNK_OVERLAP)
                     print("MIN_CHUNK_LEN      :", MIN_CHUNK_LEN)
                     print("INDEX_PATH         :", INDEX_PATH)
