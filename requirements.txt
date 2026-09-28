@@ -1,0 +1,12 @@
+# Gerado a partir do ambiente conda "envRAGsimples" (Python 3.13.9)
+# torch NÃO está incluído de propósito: no HPC de destino (ROCm) o PyTorch deve vir
+# do módulo do cluster (ex.: `module load pytorch/2.10.0`), nunca via `pip install torch`
+# (o wheel do PyPI é para CUDA/NVIDIA e não funciona nas GPUs AMD/ROCm).
+chromadb==1.5.5
+transformers==5.3.0
+huggingface_hub==1.7.2
+rank-bm25==0.2.2
+tqdm==4.67.3
+python-dotenv==1.2.2
+requests==2.32.5
+numpy==2.4.3
